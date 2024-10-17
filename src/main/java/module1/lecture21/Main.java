@@ -4,7 +4,8 @@ import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
-        printDate(new Object());
+        Thread.setDefaultUncaughtExceptionHandler(new Handler());
+        printDate(null);
     }
 
     private static void printDate(Object o) {
