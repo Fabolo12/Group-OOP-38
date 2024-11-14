@@ -1,6 +1,6 @@
-package module2.lecture3.console.items;
+package module2.lecture4.console.items;
 
-import module2.lecture3.console.MenuItem;
+import module2.lecture4.console.MenuItem;
 
 public class DecryptFileMenu implements MenuItem {
     @Override

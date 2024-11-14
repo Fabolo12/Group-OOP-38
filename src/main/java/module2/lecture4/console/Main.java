@@ -1,10 +1,10 @@
-package module2.lecture3.console;
+package module2.lecture4.console;
 
-import module2.lecture3.console.items.BruteForceFileMenu;
-import module2.lecture3.console.items.DecryptFileMenu;
-import module2.lecture3.console.items.DeleteFileMenu;
-import module2.lecture3.console.items.EncryptFileMenu;
-import module2.lecture3.console.items.ExitMenu;
+import module2.lecture4.console.items.BruteForceFileMenu;
+import module2.lecture4.console.items.DecryptFileMenu;
+import module2.lecture4.console.items.DeleteFileMenu;
+import module2.lecture4.console.items.EncryptFileMenu;
+import module2.lecture4.console.items.ExitMenu;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

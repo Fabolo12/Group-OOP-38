@@ -1,4 +1,4 @@
-package module2.lecture3.console;
+package module2.lecture4.console;
 
 public interface MenuItem {
     void execute();

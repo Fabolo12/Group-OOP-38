@@ -1,4 +1,4 @@
-package module2.lecture3;
+package module2.lecture4;
 
 public class ExitMenuItem extends AbstractMenuItem{
     @Override
