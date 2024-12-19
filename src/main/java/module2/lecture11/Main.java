@@ -17,11 +17,22 @@ public class Main {
     }
 
     private void run() throws InterruptedException {
+        class MyClass {
+
+        }
+
         Runnable run1 = () -> {
             while (true) {
 
             }
+        };
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                while (true) {
 
+                }
+            }
         };
         Runnable run2 = () -> {
             for (int i = 0; i < 10_00; i++) {
