@@ -23,6 +23,7 @@ public class Main3 {
     static class Dog {
         private String name = "Dog";
 
+        @Deprecated
         private Dog() {
         }
 
