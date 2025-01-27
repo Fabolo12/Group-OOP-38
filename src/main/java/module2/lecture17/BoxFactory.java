@@ -54,6 +54,17 @@ public class BoxFactory {
         final String rule = fieldInfo.rule();
 
         switch (rule) {
+            case String s when s.equals("!=") && field.getInt(box) == additional ->
+                    throw new IllegalArgumentException("Field %s is %d".formatted(field.getName(), additional));
+            case String s when s.equals(">=") && field.getInt(box) < additional ->
+                    throw new IllegalArgumentException("Field %s is less than %d".formatted(field.getName(), additional));
+            case String s when s.equals(">") && field.getInt(box) <= additional ->
+                    throw new IllegalArgumentException("Field %s is less than or equal to %d"
+                            .formatted(field.getName(), additional));
+            default -> throw new IllegalArgumentException("Unsupported rule: %s".formatted(rule));
+        }
+
+        /*switch (rule) {
             case "!=" -> {
                 if (field.getInt(box) == additional) {
                     throw new IllegalArgumentException("Field " + field.getName() + " is " + additional);
@@ -72,7 +83,7 @@ public class BoxFactory {
                 }
             }
             default -> throw new IllegalArgumentException("Unsupported rule: " + rule);
-        }
+        }*/
     }
 
     private void checkStringCondition(
