@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Main {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     @SneakyThrows
     public static void main(String[] args) {
