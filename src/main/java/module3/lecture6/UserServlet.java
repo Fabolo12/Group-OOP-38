@@ -4,16 +4,19 @@ import com.google.gson.Gson;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,18 +41,25 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        resp.addCookie(new Cookie("name", "name"));
+
         try (final PrintWriter writer = resp.getWriter()) {
             writer.println(gson.toJson(users));
         }
     }
 
+    @SneakyThrows
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) {
+        Arrays.stream(req.getCookies())
+                .forEach(cookie -> LOGGER.info("Cookie: {} = {}", cookie.getName(), cookie.getValue()));
+
         final UUID id = UUID.randomUUID();
         final String name = Objects.requireNonNullElse(req.getParameter("name"), "Default name");
         final int age = Integer.parseInt(Objects.requireNonNullElse(req.getParameter("age"), "18"));
         final User user = new User(id, name, age);
         users.add(user);
+//        TimeUnit.SECONDS.sleep(5);
         try (final PrintWriter writer = resp.getWriter()) {
             writer.println(String.format("{\"message\": \"User with id [%s] created!\"", id));
         }
