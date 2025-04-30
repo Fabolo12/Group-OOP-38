@@ -10,7 +10,7 @@ import module3.lecture9.services.UserService;
 
 import java.io.PrintWriter;
 
-@WebServlet(name = "UserController", value = "/users")
+@WebServlet(name = "ClientController", value = "/users2")
 public class UserController extends HttpServlet {
 
     private final UserService userService;
