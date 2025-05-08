@@ -8,12 +8,14 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
