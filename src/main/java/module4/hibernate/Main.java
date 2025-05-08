@@ -17,8 +17,8 @@ public class Main {
 //         jpaHibernate();
 //        mergeExample();
 //        receiveExample();
-//        deleteExample();
-        getPartInfoFromEntity();
+        deleteExample();
+//        getPartInfoFromEntity();
     }
 
     private static void getPartInfoFromEntity() {
@@ -65,7 +65,7 @@ public class Main {
         final User user2 = createUser(sessionFactory);
         final Session session2 = sessionFactory.openSession();
         session2.beginTransaction();
-        session2.createQuery("delete from User where id = :id")
+        session2.createMutationQuery("delete from User where id = :id")
                 .setParameter("id", user2.getId())
                 .executeUpdate();
         session2.getTransaction().commit();
