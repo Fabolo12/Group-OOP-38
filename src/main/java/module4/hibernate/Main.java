@@ -3,21 +3,34 @@ package module4.hibernate;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import module4.hibernate.config.HibernateConfiguration;
+import module4.hibernate.model.City;
 import module4.hibernate.model.User;
 import module4.hibernate.model.UserDto;
+import module4.hibernate.model.UserStatus;
+import org.flywaydb.core.Flyway;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 // TODO add migration for database
 public class Main {
     public static void main(String[] args) {
+        Flyway flyway = Flyway.configure()
+                .dataSource("jdbc:postgresql://localhost:5433/TestBase", "postgres", "root")
+                .baselineOnMigrate(true)
+                .locations("db/migration")
+                .load();
+        flyway.migrate();
+
 //        nativeHibernate();
 //         jpaHibernate();
 //        mergeExample();
 //        receiveExample();
-        deleteExample();
+//        deleteExample();
 //        getPartInfoFromEntity();
     }
 
@@ -187,6 +200,18 @@ public class Main {
 
         final User user = new User();
         user.setName("Daniel");
+        user.setStatus(UserStatus.ACTIVE);
+        user.setPremium(true);
+
+        final City city = new City();
+        city.setName("San Francisco");
+        city.setCountry("USA");
+        user.setCity(city);
+
+        user.setTime(LocalTime.now());
+        user.setDate(LocalDate.now());
+        user.setDateTime(LocalDateTime.now());
+
         System.out.println("Before persist id: " + user.getId());
         session.persist(user);
         System.out.println("After persist id: " + user.getId());
@@ -195,12 +220,15 @@ public class Main {
 
         final User user1 = new User();
         user1.setName("John");
+        user1.setStatus(UserStatus.BANNED);
+        user1.setPremium(false);
         session.persist(user1);
 
         final User user2 = new User();
         user2.setName("Jane");
         user2.setEmail("jane@gmail.com");
         user2.setAge(30);
+        user2.setStatus(UserStatus.DELETED);
         session.persist(user2);
 
         session.getTransaction().commit();
@@ -210,6 +238,7 @@ public class Main {
     private static void nativeHibernateGet(final Session session) {
         session.createQuery("from User", User.class)
                 .stream()
+                .peek(System.out::println)
                 .forEach(g -> System.out.printf("[%s]: %s%n", g.getId(), g.getName()));
     }
 
