@@ -4,6 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import module4.hibernate.config.HibernateConfiguration;
 import module4.hibernate.model.City;
+import module4.hibernate.model.Note;
+import module4.hibernate.model.Passport;
+import module4.hibernate.model.Subject;
 import module4.hibernate.model.User;
 import module4.hibernate.model.UserDto;
 import module4.hibernate.model.UserStatus;
@@ -14,17 +17,18 @@ import org.hibernate.SessionFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
-// TODO add migration for database
 public class Main {
     public static void main(String[] args) {
-        Flyway flyway = Flyway.configure()
+        /*Flyway flyway = Flyway.configure()
                 .dataSource("jdbc:postgresql://localhost:5433/TestBase", "postgres", "root")
                 .baselineOnMigrate(true)
                 .locations("db/migration")
                 .load();
-        flyway.migrate();
+        flyway.migrate();*/
 
 //        nativeHibernate();
 //         jpaHibernate();
@@ -32,6 +36,88 @@ public class Main {
 //        receiveExample();
 //        deleteExample();
 //        getPartInfoFromEntity();
+//        oneToOneExample();
+//        oneToManyExample();
+        manyToManyExample();
+    }
+
+    private static void manyToManyExample() {
+        final SessionFactory sessionFactory = HibernateConfiguration.getSessionFactory();
+        final User user1 = createUser(sessionFactory);
+        final User user2 = createUser(sessionFactory);
+        final Subject subject1 = new Subject();
+        final Subject subject2 = new Subject();
+
+        final Set<User> users = Set.of(user1, user2);
+        subject1.setUsers(users);
+        subject2.setUsers(users);
+
+        final Set<Subject> subjects = Set.of(subject1, subject2);
+        user1.setSubjects(subjects);
+        user2.setSubjects(subjects);
+
+        final Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.merge(user1);
+        session.merge(user2);
+//        session.persist(subject1);
+//        session.persist(subject2);
+        session.getTransaction().commit();
+
+//        final Session session2 = sessionFactory.openSession();
+//        final Subject subject3 = session2.get(Subject.class, subject1.getId());
+//        System.out.println(subject3);
+//        System.out.println(subject3.getUsers().size());
+    }
+
+    private static void oneToManyExample() {
+        final SessionFactory sessionFactory = HibernateConfiguration.getSessionFactory();
+        final User user = createUser(sessionFactory);
+        final Note note1 = new Note();
+        note1.setUser(user);
+        final Note note2 = new Note();
+        note2.setUser(user);
+
+        final Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.persist(note1);
+        session.persist(note2);
+        session.getTransaction().commit();
+
+        final Session session2 = sessionFactory.openSession();
+        final User user1 = session2.get(User.class, user.getId());
+        System.out.println(user1);
+        System.out.println(user1.getNotes().size());
+    }
+
+    private static void oneToOneExample() {
+        final SessionFactory sessionFactory = HibernateConfiguration.getSessionFactory();
+        final User user = createUser(sessionFactory);
+        final Passport passport = new Passport();
+//        passport.setUser(user);
+        user.setPassport(passport); // Optional, depend on set method
+
+        final Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.persist(passport);
+        session.merge(user);
+        session.getTransaction().commit();
+
+        final Session session2 = sessionFactory.openSession();
+        final Passport passport1 = session2.get(Passport.class, passport.getId());
+        System.out.println(passport1);
+        System.out.println(passport1.getUser());
+
+        // Create PreparedStatement
+        // INSERT INTO users (id, name, email, age, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)
+        // INSERT INTO passport (id, user_id) VALUES (?, ?)
+        // Fill PreparedStatement
+        // Execute PreparedStatement
+
+        // Create PreparedStatement
+        // SELECT * FROM users WHERE id = ?
+        // SELECT * FROM passport WHERE user_id = ?
+        // Fill Java Objects from ResultSet
     }
 
     private static void getPartInfoFromEntity() {
@@ -202,6 +288,7 @@ public class Main {
         user.setName("Daniel");
         user.setStatus(UserStatus.ACTIVE);
         user.setPremium(true);
+        user.setRoles(List.of("USER"));
 
         final City city = new City();
         city.setName("San Francisco");
@@ -218,10 +305,16 @@ public class Main {
         user.setEmail("Daniel@gmail.com");
         session.persist(user);
 
+        final Passport passport = new Passport();
+        passport.setUser(user);
+        session.persist(passport);
+        session.persist(user);
+
         final User user1 = new User();
         user1.setName("John");
         user1.setStatus(UserStatus.BANNED);
         user1.setPremium(false);
+        user1.setRoles(List.of("ADMIN"));
         session.persist(user1);
 
         final User user2 = new User();
@@ -229,6 +322,7 @@ public class Main {
         user2.setEmail("jane@gmail.com");
         user2.setAge(30);
         user2.setStatus(UserStatus.DELETED);
+        user2.setRoles(List.of("MODERATOR", "ADMIN"));
         session.persist(user2);
 
         session.getTransaction().commit();
