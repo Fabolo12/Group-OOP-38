@@ -38,7 +38,77 @@ public class Main {
 //        getPartInfoFromEntity();
 //        oneToOneExample();
 //        oneToManyExample();
-        manyToManyExample();
+//        manyToManyExample();
+//        problemOfLazyLoading();
+//        problemNPlusOne();
+        firstLevelCacheExample();
+    }
+
+    private static void firstLevelCacheExample() {
+        final SessionFactory sessionFactory = HibernateConfiguration.getSessionFactory();
+        final User user01 = createUser(sessionFactory);
+        final User user02 = createUser(sessionFactory);
+
+        final Session session = sessionFactory.openSession();
+        final User user1 = session.get(User.class, user01.getId());
+        session.clear();
+        final User user2 = session.get(User.class, user01.getId());
+        final User user3 = session.get(User.class, user02.getId());
+        session.close();
+    }
+
+    private static void problemNPlusOne() {
+        final SessionFactory sessionFactory = HibernateConfiguration.getSessionFactory();
+        final User user1 = createUser(sessionFactory);
+        user1.setRoles(List.of("USER"));
+        final User user2 = createUser(sessionFactory);
+        user2.setRoles(List.of("ADMIN"));
+        final User user3 = createUser(sessionFactory);
+        user3.setRoles(List.of("ADMIN"));
+
+        final Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.merge(user1);
+        session.merge(user2);
+        session.merge(user3);
+        session.getTransaction().commit();
+        session.close();
+
+        final Session session2 = sessionFactory.openSession();
+        final User user = session2.get(User.class, user1.getId());
+        System.out.println(user);
+        final List<User> fromUser = session2.createQuery("from User", User.class).list();
+        fromUser.forEach(System.out::println);
+        session2.close();
+    }
+
+    private static void problemOfLazyLoading() {
+        final SessionFactory sessionFactory = HibernateConfiguration.getSessionFactory();
+        final User user1 = createUser(sessionFactory);
+        user1.setRoles(List.of("USER", "ADMIN"));
+        final Passport passport = new Passport();
+        user1.setPassport(passport);
+        final Subject subject1 = new Subject();
+        final Subject subject2 = new Subject();
+        subject1.setUsers(Set.of(user1));
+        subject2.setUsers(Set.of(user1));
+        final Set<Subject> subjects = Set.of(subject1, subject2);
+        user1.setSubjects(subjects);
+        final Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.merge(user1);
+        session.getTransaction().commit();
+        session.close();
+
+        final Session session2 = sessionFactory.openSession();
+        final User user = session2.get(User.class, user1.getId());
+        System.out.println(user);
+        System.out.println(user.getPassportField().getId());
+        System.out.println(user.getRoles().getLast());
+        System.out.println(user.getRoles().getFirst());
+
+        session2.close();
+
     }
 
     private static void manyToManyExample() {

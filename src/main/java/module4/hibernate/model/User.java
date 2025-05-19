@@ -7,12 +7,15 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -20,6 +23,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -78,20 +83,23 @@ public class User {
 
     private LocalDateTime dateTime;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
+//    @LazyCollection(LazyCollectionOption.EXTRA)
+//    @OrderColumn(name = "role_id")
     private List<String> roles;
 
     private List<String> roles2 = List.of("USER", "ADMIN");
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "passport_ID")
     private Passport passportField;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private Set<Note> notes;
 
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Set<Subject> subjects;
 
     public void setPassport(final Passport passport) {
