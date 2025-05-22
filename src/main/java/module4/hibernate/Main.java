@@ -10,7 +10,19 @@ import module4.hibernate.model.Subject;
 import module4.hibernate.model.User;
 import module4.hibernate.model.UserDto;
 import module4.hibernate.model.UserStatus;
-import org.flywaydb.core.Flyway;
+import module4.hibernate.model.joined.JChildClass1;
+import module4.hibernate.model.joined.JChildClass2;
+import module4.hibernate.model.mappedSuperclass.MBaseClass;
+import module4.hibernate.model.mappedSuperclass.MChildClass1;
+import module4.hibernate.model.mappedSuperclass.MChildClass2;
+import module4.hibernate.model.simple.BaseClass;
+import module4.hibernate.model.simple.ChildClass1;
+import module4.hibernate.model.simple.ChildClass2;
+import module4.hibernate.model.singleTable.SBaseClass;
+import module4.hibernate.model.singleTable.SChildClass1;
+import module4.hibernate.model.singleTable.SChildClass2;
+import module4.hibernate.model.tablePerClass.TChildClass1;
+import module4.hibernate.model.tablePerClass.TChildClass2;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -41,7 +53,112 @@ public class Main {
 //        manyToManyExample();
 //        problemOfLazyLoading();
 //        problemNPlusOne();
-        firstLevelCacheExample();
+//        firstLevelCacheExample();
+//        simpleInheritance();
+//        mappedSuperclassInheritance();
+//        singleTableInheritance();
+//        joinedInheritance();
+        tablePerClassInheritance();
+    }
+
+    private static void tablePerClassInheritance() {
+        final EntityManager entityManager = HibernateConfiguration.getEntityManager();
+        entityManager.getTransaction().begin();
+        final TChildClass1 childClass1 = new TChildClass1("Base name", "Base description", "Child name");
+        final TChildClass2 childClass2 = new TChildClass2("Base name", "Base description", "Child description");
+        entityManager.persist(childClass1);
+        entityManager.persist(childClass2);
+        entityManager.getTransaction().commit();
+
+        System.out.println("Get one");
+        final TChildClass1 jChildClass1 = entityManager.find(TChildClass1.class, childClass1.getId());
+        System.out.println(jChildClass1);
+        final TChildClass2 jChildClass2 = entityManager.find(TChildClass2.class, childClass2.getId());
+        System.out.println(jChildClass2);
+
+        System.out.println("Get all");
+        entityManager.createQuery("from TChildClass1", TChildClass1.class)
+                .getResultStream()
+                .forEach(System.out::println);
+    }
+
+    private static void joinedInheritance() {
+        final EntityManager entityManager = HibernateConfiguration.getEntityManager();
+        entityManager.getTransaction().begin();
+        final JChildClass1 childClass1 = new JChildClass1("Base name", "Base description", "Child name");
+        final JChildClass2 childClass2 = new JChildClass2("Base name", "Base description", "Child description");
+        entityManager.persist(childClass1);
+        entityManager.persist(childClass2);
+        entityManager.getTransaction().commit();
+
+        System.out.println("Get one");
+        final JChildClass1 jChildClass1 = entityManager.find(JChildClass1.class, childClass1.getId());
+        System.out.println(jChildClass1);
+        final JChildClass2 jChildClass2 = entityManager.find(JChildClass2.class, childClass2.getId());
+        System.out.println(jChildClass2);
+
+        System.out.println("Get all");
+        entityManager.createQuery("from JChildClass1", JChildClass1.class)
+                .getResultStream()
+                .forEach(System.out::println);
+    }
+
+    private static void singleTableInheritance() {
+        final EntityManager entityManager = HibernateConfiguration.getEntityManager();
+        entityManager.getTransaction().begin();
+        final SChildClass1 childClass1 = new SChildClass1("Base name", "Base description", "Child name");
+        final SChildClass2 childClass2 = new SChildClass2("Base name", "Base description", "Child description");
+        entityManager.persist(childClass1);
+        entityManager.persist(childClass2);
+        entityManager.getTransaction().commit();
+
+        System.out.println("Get one");
+        final SChildClass1 sChildClass1 = entityManager.find(SChildClass1.class, childClass1.getId());
+        System.out.println(sChildClass1);
+        final SChildClass2 sChildClass2 = entityManager.find(SChildClass2.class, childClass2.getId());
+        System.out.println(sChildClass2);
+
+        System.out.println("Get all");
+        entityManager.createNativeQuery("SELECT * FROM sbaseclass WHERE type = 'child_1'", SChildClass1.class)
+                .getResultStream()
+                .forEach(System.out::println);
+
+        entityManager.createQuery("from SChildClass1", SChildClass1.class)
+                .getResultStream()
+                .forEach(System.out::println);
+    }
+
+    private static void mappedSuperclassInheritance() {
+        final EntityManager entityManager = HibernateConfiguration.getEntityManager();
+        entityManager.getTransaction().begin();
+        final MChildClass1 childClass1 = new MChildClass1("Base name", "Base description", "Child name");
+        final MChildClass2 childClass2 = new MChildClass2("Base name", "Base description", "Child description");
+        entityManager.persist(childClass1);
+        entityManager.persist(childClass2);
+        entityManager.getTransaction().commit();
+
+        System.out.println("Get one");
+        final MChildClass1 mChildClass1 = entityManager.find(MChildClass1.class, childClass1.getId());
+        System.out.println(mChildClass1);
+        final MChildClass2 mChildClass2 = entityManager.find(MChildClass2.class, childClass2.getId());
+        System.out.println(mChildClass2);
+
+        System.out.println("Get all");
+        entityManager.createQuery("from MChildClass1", MChildClass1.class)
+                .getResultStream()
+                .forEach(System.out::println);
+    }
+
+    private static void simpleInheritance() {
+        final EntityManager entityManager = HibernateConfiguration.getEntityManager();
+        entityManager.getTransaction().begin();
+        final BaseClass baseClass = new BaseClass("Base name", "Base description");
+        final ChildClass1 childClass1 = new ChildClass1("Base name", "Base description", "Child name");
+        final ChildClass2 childClass2 = new ChildClass2("Base name", "Base description", "Child description");
+        entityManager.persist(baseClass);
+        entityManager.persist(childClass1);
+        entityManager.persist(childClass2);
+        entityManager.getTransaction().commit();
     }
 
     private static void firstLevelCacheExample() {
