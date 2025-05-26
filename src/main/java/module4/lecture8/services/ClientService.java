@@ -2,7 +2,9 @@ package module4.lecture8.services;
 
 import module4.lecture8.controllers.beans.ClientBean;
 import module4.lecture8.models.Client;
-import module4.lecture8.repositories.ClientRepository;
+import module4.lecture8.repositories.ClientRepositoryJdbc;
+import module4.lecture8.repositories.ClientRepositoryJpa;
+import module4.lecture8.repositories.UserRepositoryI;
 
 import java.util.Optional;
 import java.util.Set;
@@ -12,15 +14,16 @@ public class ClientService {
 
     private static ClientService instance;
 
-    private ClientRepository repository;
+    private UserRepositoryI repository;
 
-    private ClientService(ClientRepository repository) {
+    private ClientService(UserRepositoryI repository) {
         this.repository = repository;
     }
 
     public static ClientService getInstance() {
         if (instance == null) {
-            instance = new ClientService(ClientRepository.getInstance());
+//            instance = new ClientService(ClientRepositoryJdbc.getInstance());
+            instance = new ClientService(ClientRepositoryJpa.getInstance());
         }
         return instance;
     }

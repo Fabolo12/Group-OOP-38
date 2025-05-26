@@ -14,21 +14,22 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class ClientRepository extends AbstractRepository {
+public class ClientRepositoryJdbc extends AbstractRepository implements UserRepositoryI {
 
-    private static ClientRepository instance;
+    private static ClientRepositoryJdbc instance;
 
-    private ClientRepository() {
+    private ClientRepositoryJdbc() {
         super();
     }
 
-    public static ClientRepository getInstance() {
+    public static ClientRepositoryJdbc getInstance() {
         if (instance == null) {
-            instance = new ClientRepository();
+            instance = new ClientRepositoryJdbc();
         }
         return instance;
     }
 
+    @Override
     @SneakyThrows
     public Set<Client> getAll() {
         try (final Connection connection = getConnection();
@@ -43,6 +44,7 @@ public class ClientRepository extends AbstractRepository {
         }
     }
 
+    @Override
     @SneakyThrows
     public Optional<Client> get(final UUID id) {
         final String sql = "SELECT * FROM client WHERE id = ?";
@@ -57,6 +59,7 @@ public class ClientRepository extends AbstractRepository {
         }
     }
 
+    @Override
     @SneakyThrows
     public UUID create(final ClientBean bean) {
         final String sql = """
@@ -77,6 +80,7 @@ public class ClientRepository extends AbstractRepository {
         }
     }
 
+    @Override
     @SneakyThrows
     public void update(final ClientBean bean) {
         final String sql = """
@@ -102,6 +106,7 @@ public class ClientRepository extends AbstractRepository {
         }
     }
 
+    @Override
     @SneakyThrows
     public void delete(final UUID id) {
         final String sql = """
@@ -117,6 +122,7 @@ public class ClientRepository extends AbstractRepository {
         }
     }
 
+    @Override
     @SneakyThrows
     public void restore(final UUID id) {
         final String sql = """

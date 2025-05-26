@@ -12,19 +12,18 @@ import module4.hibernate.model.UserDto;
 import module4.hibernate.model.UserStatus;
 import module4.hibernate.model.joined.JChildClass1;
 import module4.hibernate.model.joined.JChildClass2;
-import module4.hibernate.model.mappedSuperclass.MBaseClass;
 import module4.hibernate.model.mappedSuperclass.MChildClass1;
 import module4.hibernate.model.mappedSuperclass.MChildClass2;
 import module4.hibernate.model.simple.BaseClass;
 import module4.hibernate.model.simple.ChildClass1;
 import module4.hibernate.model.simple.ChildClass2;
-import module4.hibernate.model.singleTable.SBaseClass;
 import module4.hibernate.model.singleTable.SChildClass1;
 import module4.hibernate.model.singleTable.SChildClass2;
 import module4.hibernate.model.tablePerClass.TChildClass1;
 import module4.hibernate.model.tablePerClass.TChildClass2;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -342,10 +341,10 @@ public class Main {
 
         final User user1 = createUser(sessionFactory);
         final Session session1 = sessionFactory.openSession();
-        session1.beginTransaction();
+        final Transaction transaction = session1.beginTransaction();
         final User getUser = session1.get(User.class, user1.getId());
         session1.remove(getUser);
-        session1.getTransaction().commit();
+        transaction.commit();
         session1.close();
 
         final User user2 = createUser(sessionFactory);
