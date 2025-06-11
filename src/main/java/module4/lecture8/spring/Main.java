@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,23 +14,50 @@ public class Main {
         final MyBean bean2 = context.getBean(MyBean.class);
         System.out.println("Bean created: " + bean2);
         System.out.println("Are beans equal? " + (bean1 == bean2));
+
+        System.out.println("--------------------");
+
+        final Box box1 = context.getBean(Box.class);
+        System.out.println("Box created: " + box1);
+        final Box box2 = context.getBean(Box.class);
+        System.out.println("Box created: " + box2);
+        System.out.println("Are boxes equal? " + (box1 == box2));
+
+    }
+
+    static class MyBean {
+
+        private Box box;
+
+        public MyBean(final Box box) {
+            this.box = box;
+            System.out.println("MyBean constructor called");
+        }
+    }
+
+    static class Box {
+        public Box() {
+            System.out.println("Box constructor called");
+        }
+    }
+
+    class MyBean2 {
+
     }
 }
 
 @Configuration
 class MyConfig {
-     @Bean
-     public MyBean myService() {
-         return new MyBean();
-     }
-}
+    @Bean
+    @Scope("singleton") // Default scope is singleton
+    public Main.MyBean myService() {
+        return new Main.MyBean(box());
+    }
 
-class MyBean {
-    public MyBean() {
-        System.out.println("MyBean constructor called");
+    @Bean
+    @Scope("prototype")
+    public Main.Box box() {
+        return new Main.Box();
     }
 }
 
-class MyBean2 {
-
-}
